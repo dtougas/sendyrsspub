@@ -1,0 +1,4 @@
+.idea
+.DS_Store
+.pyc
+feed_log.db

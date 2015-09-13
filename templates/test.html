@@ -1,0 +1,18 @@
+<html>
+  <head>
+    <title>{{ feed.title }}</title>
+  </head>
+  <body>
+    <h1>{{ feed.title }}</h1>
+    <h2>{{ feed.subtitle_detail.value }}</h2>
+    <ol>
+      {% for entry in entries %}
+        <li>
+          <h3>{{ entry.title }} <small>{{ entry.published }}</small></h3>
+          <p><strong>{{ entry.title_detail.value }}</strong></p>
+          <p>{{ entry.summary_detail.value }}</p>
+        </li>
+      {% endfor %}
+    </ol>
+  </body>
+</html>

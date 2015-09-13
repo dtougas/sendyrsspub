@@ -1,0 +1,7 @@
+# {{ feed.title }}
+
+## {{ feed.subtitle_detail.value }}
+{% for entry in entries %}
+Title: {{ entry.title }}
+Date: {{ entry.published }}
+{% endfor %}
