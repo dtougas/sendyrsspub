@@ -71,7 +71,7 @@ Now onto getting the software setup...
 
 Edit the file settings.py and change the settings to match your current
 environment. Generally, you can leave the default database name (feed_log.db)
-as-is - there are very few cases when you will need to change this. For
+as-is; there are very few cases when you will need to change this. For
 testing, you can also leave the default template names as-is.
 
 2. Test Reading the Feed URL
