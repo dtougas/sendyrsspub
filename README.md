@@ -128,6 +128,14 @@ newsletter will be sent.
 The database can be cleaned and/or pruned using the *db_clean* and *db_prune*
 commands. See the command-line documentation for more details.
 
+Other Resources
+===============
+
+Other articles from around the web:
+
+- Chekcout this blog post on [buysendy.com](http://buysendy.com/rss-sendy) for
+    detailed instructions on installing and configuring the software.
+
 Getting More Help
 =================
 
