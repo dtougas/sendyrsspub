@@ -154,7 +154,7 @@ class CommandProcessor(argparse.Namespace):
     def __init__(self, **kwargs):
         self._rss_publisher = None
         self._template_names = None
-        super().__init__(**kwargs)
+        super(CommandProcessor, self).__init__(**kwargs)
 
     def setup(self):
         if not hasattr(self, 'feed_url') or not self.feed_url:
