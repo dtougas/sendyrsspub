@@ -1,5 +1,5 @@
 """
-    :copyright: (c) 2015 Damien Tougas
+    :copyright: (c) 2015-2018 Damien Tougas
     :license: MIT, see LICENSE.txt for more details
 
 """
