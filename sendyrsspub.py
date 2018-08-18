@@ -1,8 +1,8 @@
 """
     :copyright: (c) 2015 Damien Tougas
     :license: MIT, see LICENSE.txt for more details
-"""
 
+"""
 import argparse
 import pprint
 import sqlite3
@@ -16,7 +16,6 @@ from settings import DEFAULTS
 
 
 class SendyRSSPublisher(object):
-
     def __init__(self, sendy_url, sendy_api_key, feed_url, feed_log):
         self.sendy_url = sendy_url
         self.sendy_api_key = sendy_api_key
@@ -39,18 +38,26 @@ class SendyRSSPublisher(object):
         data['entries'] = new_entries
         return data
 
-    def render_template(self, template_name, data):
+    def render_string_template(self, string_template, data):
+        template = self.template_env.from_string(string_template)
+        return self.render_template(template, data)
+
+    def render_file_template(self, template_name, data):
+        template = self.template_env.get_template(template_name)
+        return self.render_template(template, data)
+
+    def render_template(self, template, data):
         if len(data['entries']) == 0:
             return None
-        template = self.template_env.get_template(template_name)
         return template.render(**data)
 
-    def render_and_send(self, from_name, from_email, reply_to, subject,
+    def render_and_send(self, from_name, from_email, reply_to, subject_template,
                         plain_template, html_template, data, list_ids):
         if len(data['entries']) == 0:
             return
-        plain_text = self.render_template(plain_template, data)
-        html_text = self.render_template(html_template, data)
+        subject = self.render_string_template(subject_template, data)
+        plain_text = self.render_file_template(plain_template, data)
+        html_text = self.render_file_template(html_template, data)
         return self.send(from_name, from_email, reply_to, subject,
                          plain_text, html_text, list_ids)
 
@@ -74,11 +81,10 @@ class SendyRSSPublisher(object):
         r = requests.post(url, data=post_data)
         if not r.status_code == 200 or \
                 not r.text == 'Campaign created and now sending':
-            raise Exception('Status %s: %s' % (r.status_code, r.text))
+            raise Exception('ERROR: Status %s: %s' % (r.status_code, r.text))
 
 
 class SQLiteFeedLog(object):
-
     def __init__(self, file_name, feed_url):
         self.feed_url = feed_url
         self.conn = sqlite3.connect(file_name)
@@ -144,17 +150,17 @@ class SQLiteFeedLog(object):
         self.conn.close()
 
 
-class CommandProcessor(object):
-
-    def __init__(self):
+class CommandProcessor(argparse.Namespace):
+    def __init__(self, **kwargs):
         self._rss_publisher = None
         self._template_names = None
+        super().__init__(**kwargs)
 
     def setup(self):
-        if not self.feed_url:
-            raise Exception('feed_url not set')
+        if not hasattr(self, 'feed_url') or not self.feed_url:
+            raise Exception('ERROR: feed-url not set')
         if not self.database:
-            raise Exception('database not set')
+            raise Exception('ERROR: database not set')
         feed_log = SQLiteFeedLog(self.database, self.feed_url)
         self._rss_publisher = SendyRSSPublisher(
             sendy_url=self.sendy_url,
@@ -175,7 +181,7 @@ class CommandProcessor(object):
 
     def _parse_template_names(self):
         if not self.template:
-            raise Exception('template not set')
+            raise Exception('ERROR: template not set')
         template_list = self.template.split(',')
         templates = {}
         for template in template_list:
@@ -184,7 +190,7 @@ class CommandProcessor(object):
             elif template.endswith('.txt'):
                 templates['txt'] = template
             else:
-                raise Exception('Unknown template type: %s' % template)
+                raise Exception('ERROR: Unknown template type: %s' % template)
         self._template_names = templates
 
     def test_feed(self):
@@ -194,26 +200,26 @@ class CommandProcessor(object):
     def test_template(self):
         self._parse_template_names()
         for template in self._template_names.values():
-            print '---------- %s ----------' % template
-            print self._rss_publisher.render_template(template,
-                                                      self._get_data())
+            print('---------- %s ----------' % template)
+            print(self._rss_publisher.render_file_template(template,
+                                                           self._get_data()))
 
     def send_newsletter(self):
         self._parse_template_names()
         if not self.from_name:
-            raise Exception('From name not set')
+            raise Exception('ERROR: From name not set')
         if not self.from_email:
-            raise Exception('From email not set')
+            raise Exception('ERROR: From email not set')
         if not self.reply_to:
-            raise Exception('Reply-to not set')
+            raise Exception('ERROR: Reply-to not set')
         if not self.subject:
-            raise Exception('Subject not set')
+            raise Exception('ERROR: Subject not set')
         if not 'txt' in self._template_names.keys():
-            raise Exception('No plain text template set')
+            raise Exception('ERROR: No plain text template set')
         if not 'html' in self._template_names.keys():
-            raise Exception('No HTML template set')
+            raise Exception('ERROR: No HTML template set')
         if not self.list_ids:
-            raise Exception('List IDs not set')
+            raise Exception('ERROR: List IDs not set')
         data = self._get_data()
         self._rss_publisher.render_and_send(
             from_name=self.from_name,
@@ -227,7 +233,6 @@ class CommandProcessor(object):
         )
         if not self.disable_log:
             self._rss_publisher.log_feed_data(data)
-
 
     def db_clear(self):
         self._rss_publisher.feed_log.clear()
@@ -392,4 +397,8 @@ if __name__ == '__main__':
     parser = setup_arg_parser()
     command_processor = CommandProcessor()
     parser.parse_args(sys.argv[1:], namespace=command_processor)
-    command_processor.process()
+    try:
+        command_processor.process()
+    except Exception as ex:
+        print(str(ex))
+        sys.exit(1)

@@ -1,4 +1,6 @@
+.env
 .idea
 .DS_Store
 .pyc
+__pycache__
 feed_log.db
