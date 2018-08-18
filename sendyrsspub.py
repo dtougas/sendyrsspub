@@ -225,7 +225,7 @@ class CommandProcessor(argparse.Namespace):
             from_name=self.from_name,
             from_email=self.from_email,
             reply_to=self.reply_to,
-            subject=self.subject,
+            subject_template=self.subject,
             plain_template=self._template_names['txt'],
             html_template=self._template_names['html'],
             data=data,
