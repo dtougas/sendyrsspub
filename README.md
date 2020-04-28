@@ -139,5 +139,4 @@ Other articles from around the web:
 Getting More Help
 =================
 
-If you need help getting this software up and running in your environment, or
-need technical support, [contact us at Peak Data](http://peakdata.io/contact-us/).
+If you need professional/paid help getting this software up and running in your environment, or have special feature requests, get in touch by sending me an email (see my profile).
