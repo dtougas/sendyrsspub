@@ -9,6 +9,11 @@ that feed for generating newsletters.
 SendyRSSPub is a script that pulls an Atom/RSS feed and generates a newsletter
 using the Sendy API.
 
+---
+
+[![PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/donate?hosted_button_id=H9N82E7ZCS3DG) 
+Appreciate this software? Buy me a coffee, or a beer... or a new set of guitar strings ;-)
+
 Basic Usage
 ===========
 
